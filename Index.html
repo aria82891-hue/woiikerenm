@@ -344,6 +344,50 @@ document.addEventListener("DOMContentLoaded",()=>{
  $("verifyBtn").onclick=verify;
  $("level").addEventListener("change",e=>state.level=e.target.value);
 });
+ // ==========================================
+// DETEKSI PINDAH TAB / LEPAS FOKUS (AUTO RESET)
+// ==========================================
+
+// 1. Deteksi saat pindah tab atau minimize window
+document.addEventListener("visibilitychange", function() {
+    if (document.hidden) {
+        pemicuResetUjian("Kamu kedapatan berpindah tab/keluar dari halaman ujian!");
+    }
+});
+
+// 2. Deteksi saat jendela browser kehilangan fokus (alt+tab / klik aplikasi lain)
+window.addEventListener("blur", function() {
+    pemicuResetUjian("Kamu kehilangan fokus dari halaman ujian!");
+});
+
+// Fungsi untuk mereset ujian kembali ke awal
+function pemicuResetUjian(alasan) {
+    // Cek apakah peserta sedang dalam halaman 'quiz' (lagi ngerjain soal)
+    const quizSection = document.getElementById("quiz");
+    
+    if (quizSection && !quizSection.classList.contains("hidden")) {
+        // Tampilkan peringatan/toast
+        alert("⚠️ DIKELUARKAN!\n\n" + alasan + "\nUjian akan diulang dari awal.");
+        
+        // Reset pilihan jawaban (uncheck radio button)
+        const inputs = document.querySelectorAll('#questions input[type="radio"]');
+        inputs.forEach(input => input.checked = false);
+
+        // Sembunyikan section quiz dan tampilkan dashboard atau login
+        quizSection.classList.add("hidden");
+        
+        // Pilih salah satu:
+        // A. Kembalikan ke Dashboard:
+        document.getElementById("dashboard").classList.remove("hidden");
+        
+        // B. ATAU kalau mau dikembalikan total ke halaman Form Login awal, pakai ini:
+        // document.getElementById("login").classList.remove("hidden");
+        
+        // Reset scroll ke atas
+        window.scrollTo(0, 0);
+    }
+                                                 }
+ 
 </script>
 </body>
 </html>
